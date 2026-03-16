@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Performance Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+<!-- ═══ BACKGROUND ORBS ═══ -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">StudyLens<span class="logo-dot">.</span></span>
+    </div>
+    <nav class="header-nav">
+      <span class="nav-tag">AI-Powered Prediction</span>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-label">Machine Learning · Random Forest · Flask</div>
+  <h1 class="hero-title">Student Performance<br><span class="gradient-text">Predictor</span></h1>
+  <p class="hero-sub">Enter student data below to predict the final exam score using our trained model.</p>
+</section>
+
+<!-- ═══ MODEL METRICS ═══ -->
+<section class="metrics-row">
+  <div class="metric-pill">
+    <span class="metric-label">Model R²</span>
+    <span class="metric-val accent-green">{{ metrics.r2 }}</span>
+  </div>
+  <div class="metric-pill">
+    <span class="metric-label">MAE</span>
+    <span class="metric-val accent-purple">{{ metrics.mae }}</span>
+  </div>
+  <div class="metric-pill">
+    <span class="metric-label">RMSE</span>
+    <span class="metric-val accent-pink">{{ metrics.rmse }}</span>
+  </div>
+  <div class="metric-pill">
+    <span class="metric-label">Algorithm</span>
+    <span class="metric-val">Random Forest</span>
+  </div>
+</section>
+
+<!-- ═══ MAIN GRID ═══ -->
+<main class="main-grid">
+
+  <!-- INPUT CARD -->
+  <section class="card input-card">
+    <div class="card-header">
+      <div class="card-icon">✦</div>
+      <div>
+        <h2 class="card-title">Student Profile</h2>
+        <p class="card-sub">Fill in the academic details</p>
+      </div>
+    </div>
+
+    <div class="input-grid">
+
+      <!-- Study Hours -->
+      <div class="field-group">
+        <label class="field-label">
+          <span class="field-icon">📚</span> Study Hours / day
+        </label>
+        <div class="field-wrap">
+          <input id="study_hours" type="number" class="field-input"
+                 min="0" max="24" step="0.5" placeholder="e.g. 6.0" />
+          <span class="field-unit">hrs</span>
+        </div>
+        <div class="range-hint">0 – 24</div>
+      </div>
+
+      <!-- Attendance -->
+      <div class="field-group">
+        <label class="field-label">
+          <span class="field-icon">🏫</span> Attendance
+        </label>
+        <div class="field-wrap">
+          <input id="attendance" type="number" class="field-input"
+                 min="0" max="100" step="1" placeholder="e.g. 85" />
+          <span class="field-unit">%</span>
+        </div>
+        <div class="range-hint">0 – 100 %</div>
+      </div>
+
+      <!-- Previous Grade -->
+      <div class="field-group">
+        <label class="field-label">
+          <span class="field-icon">📝</span> Previous Grade
+        </label>
+        <div class="field-wrap">
+          <input id="previous_grade" type="number" class="field-input"
+                 min="0" max="100" step="1" placeholder="e.g. 72" />
+          <span class="field-unit">/100</span>
+        </div>
+        <div class="range-hint">0 – 100</div>
+      </div>
+
+      <!-- Sleep Hours -->
+      <div class="field-group">
+        <label class="field-label">
+          <span class="field-icon">🌙</span> Sleep Hours / night
+        </label>
+        <div class="field-wrap">
+          <input id="sleep_hours" type="number" class="field-input"
+                 min="0" max="24" step="0.5" placeholder="e.g. 7.5" />
+          <span class="field-unit">hrs</span>
+        </div>
+        <div class="range-hint">0 – 24</div>
+      </div>
+
+      <!-- Internet Usage -->
+      <div class="field-group">
+        <label class="field-label">
+          <span class="field-icon">🌐</span> Internet Usage / day
+        </label>
+        <div class="field-wrap">
+          <input id="internet_usage" type="number" class="field-input"
+                 min="0" max="24" step="0.5" placeholder="e.g. 3.0" />
+          <span class="field-unit">hrs</span>
+        </div>
+        <div class="range-hint">0 – 24</div>
+      </div>
+
+    </div>
+
+    <button id="predict-btn" class="predict-btn" onclick="predict()">
+      <span class="btn-glow"></span>
+      <span class="btn-text">Predict Score ◈</span>
+    </button>
+
+    <div id="error-msg" class="error-msg hidden"></div>
+  </section>
+
+  <!-- RESULT CARD -->
+  <section class="card result-card" id="result-card">
+    <div class="card-header">
+      <div class="card-icon accent-green">◉</div>
+      <div>
+        <h2 class="card-title">Prediction Result</h2>
+        <p class="card-sub">AI-generated score estimate</p>
+      </div>
+    </div>
+
+    <div class="result-body" id="result-body">
+      <div class="result-idle">
+        <div class="idle-icon">◈</div>
+        <p>Enter student data and click<br><strong>Predict Score</strong> to see results.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══ CHARTS ═══ -->
+<section class="charts-section">
+  <div class="section-header">
+    <h2 class="section-title">Dataset <span class="gradient-text">Insights</span></h2>
+    <p class="section-sub">Visual analysis of the training dataset</p>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3 class="chart-title">Study Hours vs Score</h3>
+      <img src="data:image/png;base64,{{ charts.study_score }}" class="chart-img" alt="Study Hours vs Score" />
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-title">Attendance vs Score</h3>
+      <img src="data:image/png;base64,{{ charts.attendance_score }}" class="chart-img" alt="Attendance vs Score" />
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-title">Score Distribution</h3>
+      <img src="data:image/png;base64,{{ charts.distribution }}" class="chart-img" alt="Score Distribution" />
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-title">Feature Importance</h3>
+      <img src="data:image/png;base64,{{ charts.importance }}" class="chart-img" alt="Feature Importance" />
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+  <p>StudyLens · Student Performance Predictor · Built with Flask &amp; scikit-learn</p>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
